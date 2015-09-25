@@ -1,4 +1,4 @@
-# Vibrant-rs
+# HSL
 
 Represent colors in HSL and convert between HSL and RGB.
 
