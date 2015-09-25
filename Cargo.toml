@@ -7,10 +7,11 @@ homepage = "https://github.com/killercup/hsl-rs.git"
 license = "MIT"
 readme = "README.md"
 documentation = "http://killercup.github.io/hsl-rs/"
+description = "Represent colors in HSL and convert between HSL and RGB."
 
 [features]
 default = []
 dev = ["clippy"]
 
 [dependencies]
-clippy = { git = "https://github.com/Manishearth/rust-clippy.git", optional = true }
+clippy = { version = "0.0.15", optional = true }
