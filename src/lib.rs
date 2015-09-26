@@ -50,7 +50,9 @@ impl HSL {
         let min = min(min(r, g), b);
 
         // Normalized RGB: Divide everything by 255 to get percentages of colors.
-        let (r, g, b) = (r as f64 / 255_f64, g as f64 / 255_f64, b as f64 / 255_f64);
+        let (r, g, b) = (r as f64 / 255_f64,
+                         g as f64 / 255_f64,
+                         b as f64 / 255_f64);
         let (min, max) = (min as f64 / 255_f64, max as f64 / 255_f64);
 
         // Luminosity is the average of the max and min rgb color intensities.
