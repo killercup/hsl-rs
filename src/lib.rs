@@ -11,8 +11,10 @@
 //! assert_eq!(yellow_hsl, HSL { h: 60_f64, s: 1_f64, l: 0.5_f64 });
 //! ```
 
+#[cfg(test)] extern crate quickcheck;
+
 /// Color represented in HSL
-#[derive(Debug, PartialEq, PartialOrd, Default)]
+#[derive(Clone, Copy, Debug, PartialEq, PartialOrd, Default)]
 pub struct HSL {
     /// Hue in 0-360 degree
     pub h: f64,
@@ -153,5 +155,50 @@ fn hue_to_rgb(p: f64, q: f64, t: f64) -> f64 {
         p + (q - p) * (2.0 / 3.0 - t) * 6.0
     } else {
         p
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use quickcheck::{Arbitrary, Gen, quickcheck};
+    use super::*;
+
+    #[derive(Clone, Debug, Hash, PartialEq)]
+    struct RGB {
+        r: u8, g: u8, b: u8,
+    }
+
+    impl Arbitrary for RGB {
+        fn arbitrary<G: Gen>(g: &mut G) -> RGB {
+            RGB {
+                r: g.gen(),
+                g: g.gen(),
+                b: g.gen(),
+            }
+        }
+    }
+
+    fn sloppy_rgb_compare(a: RGB, b: RGB) -> bool {
+        const EPSILON: i32 = 0;
+        let res = (a.r as i32 - b.r as i32 <= EPSILON) &&
+                  (a.g as i32 - b.g as i32 <= EPSILON) &&
+                  (a.b as i32 - b.b as i32 <= EPSILON);
+
+        if !res {
+            println!("in: {:?}, out: {:?}", a, b);
+        }
+
+        res
+    }
+
+    fn idemponent(input: RGB) -> bool {
+        let RGB { r, g, b } = input;
+        let (r_out, g_out, b_out) = HSL::from_rgb(&[r, g, b]).to_rgb();
+        sloppy_rgb_compare(input, RGB { r: r_out, g: g_out, b: b_out })
+    }
+
+    #[test]
+    fn quickcheck_rgb_to_hsl_and_back() {
+        quickcheck(idemponent as fn(RGB) -> bool);
     }
 }

@@ -15,3 +15,6 @@ dev = ["clippy"]
 
 [dependencies]
 clippy = { version = "0.0.15", optional = true }
+
+[dev-dependencies]
+quickcheck = "0.2.24"
