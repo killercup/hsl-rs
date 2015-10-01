@@ -163,22 +163,26 @@ mod tests {
     use quickcheck::{Arbitrary, Gen, quickcheck};
     use super::*;
 
-    impl Arbitrary for HSL {
-        fn arbitrary<G: Gen>(g: &mut G) -> HSL {
-            HSL {
-                h: g.gen_range(0_f64, 360_f64),
-                s: g.gen_range(0_f64, 1_f64),
-                l: g.gen_range(0_f64, 1_f64),
+    #[derive(Clone, Debug, Hash, PartialEq)]
+    struct RGB {
+        r: u8, g: u8, b: u8,
+    }
+
+    impl Arbitrary for RGB {
+        fn arbitrary<G: Gen>(g: &mut G) -> RGB {
+            RGB {
+                r: g.gen(),
+                g: g.gen(),
+                b: g.gen(),
             }
         }
     }
 
-    fn sloppy_compare(a: &HSL, b: &HSL) -> bool {
-        const EPSILON: f64 = 0.05;
-
-        let res = (a.s == 0_f64 || (a.h - b.h).abs() < (EPSILON * 360_f64)) &&
-            (a.s - b.s).abs() < EPSILON &&
-            (a.l - b.l).abs() < EPSILON;
+    fn sloppy_rgb_compare(a: RGB, b: RGB) -> bool {
+        const EPSILON: i32 = 0;
+        let res = (a.r as i32 - b.r as i32 <= EPSILON) &&
+                  (a.g as i32 - b.g as i32 <= EPSILON) &&
+                  (a.b as i32 - b.b as i32 <= EPSILON);
 
         if !res {
             println!("in: {:?}, out: {:?}", a, b);
@@ -187,13 +191,14 @@ mod tests {
         res
     }
 
-    fn idemponent(x: HSL) -> bool {
-        let (r, g, b) = x.to_rgb();
-        sloppy_compare(&x, &HSL::from_rgb(&[r, g, b]))
+    fn idemponent(input: RGB) -> bool {
+        let RGB { r, g, b } = input;
+        let (r_out, g_out, b_out) = HSL::from_rgb(&[r, g, b]).to_rgb();
+        sloppy_rgb_compare(input, RGB { r: r_out, g: g_out, b: b_out })
     }
 
     #[test]
-    fn quickcheck_rgb_and_back() {
-        quickcheck(idemponent as fn(HSL) -> bool);
+    fn quickcheck_rgb_to_hsl_and_back() {
+        quickcheck(idemponent as fn(RGB) -> bool);
     }
 }
