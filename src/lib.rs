@@ -11,6 +11,8 @@
 //! assert_eq!(yellow_hsl, HSL { h: 60_f64, s: 1_f64, l: 0.5_f64 });
 //! ```
 
+#![deny(missing_docs)]
+
 #[cfg(test)] extern crate quickcheck;
 
 /// Color represented in HSL
