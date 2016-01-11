@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["HSL","Color represented in HSL"]]});
